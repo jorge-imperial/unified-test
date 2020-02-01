@@ -24,12 +24,12 @@ var arguments = process.argv.slice(2);
 var readPreference = { readPreference: 'Primary'};
 switch( arguments[0]) {
   case 'secondary' : 
-     readPref = 'secondary';
-     break;
-  case 'secondary-preferred' :
-      readPref = 'secondary-preferred';
+      ;
+  case 'secondaryPreferred' :
+      ;
+  case 'primaryPreferred':
+      readPref = arguments[0]
       break;
-    
 };
    
 
