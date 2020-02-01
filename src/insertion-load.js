@@ -26,7 +26,7 @@ setInterval( () =>
     database.getCollection(namespaceTitle, relationTitle, undefined, dbContext)
         .then(collection => {
 
-            console.log("TS: " + Date.now()); 
+            console.log("Insertion\tTS\t " + Date.now() ); 
 
             var doc = {
                 siteCode:  random(100000),
