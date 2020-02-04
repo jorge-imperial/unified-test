@@ -40,6 +40,40 @@ function makeConnection(databaseName, poolSize, dbContext) {
     );
 }
 
+async function _getCollection(databaseName, collectionName, poolsize, dbContext) {
+    if (dbContext && dbContext.skipCache) {
+        var connection = await makeConnection(databaseName, poolsize, dbContext);
+        return connection.then(client =>
+            client.db(databaseName).collection(collectionName)
+        );
+    }
+    if (_cache == null)
+        _cache = await makeConnection(databaseName, poolsize, dbContext);
+    return _cache.db(databaseName).collection(collectionName);
+}
+
+function _makeConnection(databaseName, poolSize, dbContext) {
+    let { url, safeUrl } = getConnectionString(databaseName, dbContext);
+    // console.log(`Opening database connection to: ${safeUrl || url}`);
+    //if poolsize is null, mongo will default it to 5 consecutive connections
+    return mongoClient
+        //https://mongodb.github.io/node-mongodb-native/2.2/api/MongoClient.html#.connect
+        .connect(url, {
+            appname: databaseName,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            poolSize
+        })
+        .then(client => {
+            client.on('close', err => {
+                const errMessage = err ? err.message : '';
+                console.log('Database connection closed. ' + errMessage);
+                _cache = null;
+            });
+            return client;
+        });
+}
+
 // https://docs.mongodb.com/manual/reference/connection-string/  (be sure to select the correct mongodb version in the navigation bar)
 function getConnectionString(dbName, dbContext = {}) {
     let env = process.env;
