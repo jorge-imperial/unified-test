@@ -1,34 +1,36 @@
 // This code tries to recreate the workload of a customer.
 // They are observing an abrupt increase in connections when a secondary is shutdown forcefully. This 
 // has ocurred three times during Atlas maintenance.
- 
-const database = require('./connect');
-const yargs = require('yargs')
+const argv = require('yargs').argv
 
+const database = require('./connect');
+
+const host_list = argv.hosts_list  
+const rs_name = argv.rs_name  
+const user_name = argv.user  
+const pwd = argv.pwd  
 
 const dbContext = {
-    
-    replicasetMachines: 'localhost:31000,localhost:31001,localhost:31002',
-    replicasetName: 'rs',
-    userName: 'user',
-    password: 'password',
+    replicasetMachines: host_list,
+    replicasetName: rs_name,
+    userName:  user_name,
+    password: pwd,
     useAtlas: false
 };
+console.log(dbContext);
 
 const namespaceTitle = 'test';
 const relationTitle = 'unified_perf_test';
 
-console.log(process.argv);
-var arguments = process.argv.slice(2);
 
-var readPreference = { readPreference: 'Primary'};
-switch( arguments[0]) {
+var readPref = { readPreference: 'primary'};
+switch(argv.read_pref) {
   case 'secondary' : 
       ;
   case 'secondaryPreferred' :
       ;
   case 'primaryPreferred':
-      readPref = arguments[0]
+      readPref = { readPreference: argv.read_pref }
       break;
 };
    
